@@ -6,6 +6,8 @@ public class Trainee implements Comparable<Trainee> {
     private String lastName;
     private int numberOfExercisesSolved;
 
+    public Trainee(){}
+
     public Trainee(String firstName, String lastName, int numberOfExercisesSolved) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,7 +39,8 @@ public class Trainee implements Comparable<Trainee> {
     }
 
     public int compareTo(Trainee trainee) {
-        return trainee.getNumberOfExercisesSolved() - this.getNumberOfExercisesSolved();
+        return  trainee.getNumberOfExercisesSolved() - this.getNumberOfExercisesSolved();
+
     }
 
 }

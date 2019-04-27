@@ -3,6 +3,8 @@ package json.parser;
 public class Employee {
 
     private String empEmail;
+
+
     private String empName;
     private String salary;
     private String department;

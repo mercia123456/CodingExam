@@ -36,11 +36,10 @@ public class User {
         this.stID = stID;
     }
 
-    public String getStDOB() {
-        return stDOB;
-    }
+    public String getStDOB() { return stDOB;}
 
     public void setStDOB(String stDOB) {
         this.stDOB = stDOB;
     }
+
 }

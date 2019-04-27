@@ -1,6 +1,7 @@
 package datastructure;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class CollectionView {
 
@@ -15,6 +16,13 @@ public class CollectionView {
         map.put(4, "Boston");
         map.put(5, "San Jose");
         map.put(6, "Seattle");
+
+
+        System.out.println("Collection view of map is retrieved as follows:");
+
+        for(Map.Entry<Integer, String> colView: map.entrySet()){
+            System.out.println(colView);
+        }
 
 
     }

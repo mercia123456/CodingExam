@@ -1,14 +1,12 @@
 package parser;
 
 import databases.ConnectToMongoDB;
+import databases.ConnectToSqlDB;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProcessStudentInfo {
 
@@ -34,13 +32,12 @@ public class ProcessStudentInfo {
      *
      */
 
-    public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+    public static void main(String[] args) throws Exception {
         //Path of XML data to be read.
         String pathSelenium = System.getProperty("user.dir") + "/src/parser/selenium.xml";
         String pathQtp = System.getProperty("user.dir") + "/src/parser/qtp.xml";
         String tag = "id";
-        //Create ConnectToSqlDB Object
-        ConnectToMongoDB connectToMongoDB = new ConnectToMongoDB();
+
         //Declare a Map with List<String> into it.
         Map<String, List<Student>> list = new LinkedHashMap<String, List<Student>>();
 				
@@ -58,28 +55,58 @@ public class ProcessStudentInfo {
         seleniumStudents = xmlReader.parseData(tag, pathSelenium);
 
         //Parse Data using parseData method and then store data into Qtp ArrayList.
+         qtpStudents =xmlReader.parseData(tag, pathQtp);
 
         //add Selenium ArrayList data into map.
+        list.put("sel", seleniumStudents);
 
         //add Qtp ArrayList data into map.
-
+        list.put("qtp", qtpStudents);
 
         //Retrieve map data and display output.
+        Iterator itr = list.keySet().iterator();
+        while (itr.hasNext()){
+            List st = list.get(itr.next());
+            for(Object str: st){
+                System.out.println(str);
+            }
+        }
 
+        //Connect to MySQl database
+        ConnectToSqlDB connectToSqlDB= new ConnectToSqlDB();
 
-        //Store Qtp data into Qtp table in Database
-        connectToMongoDB.insertIntoMongoDB(seleniumStudents, "qtp");
-        //connectToSqlDB.insertDataFromArrayListToMySql(seleniumStudents, "qtp","studentList");
+        //Create tables in database
+        connectToSqlDB.createTableFromStringToMySql("tbl_Qtp","mapKey","map Value");
+        connectToSqlDB.createTableFromStringToMySql("tbl_Selenium","mapKey","mapValue");
 
         //Store Selenium data into Selenium table in Database
+        //Store Qtp data into Qtp table in Database
+        for(Object str : list.keySet()){
+            for (Object str1 : list.get(str)){
+                List<String> list1 = new ArrayList<String>();
+                list1.add(str.toString());
+                list1.add(str1.toString());
 
-        //Retrieve Qtp students from Database
-        List<Student> stList = connectToMongoDB.readStudentListFromMongoDB("qtp");
-        for (Student st : stList) {
-            System.out.println(st.getFirstName() + " " + st.getLastName() + " " + st.getScore() + " " + st.getId());
+                if (str.equals("sel")){
+                    connectToSqlDB.InsertDataFromArrayListToMySql(list1,"tbl_Selenium","mapKey","mapValue");
+
+                }else {
+                    connectToSqlDB.InsertDataFromArrayListToMySql(list1,"tbl_Qtp","mapKey","mapValue");
+
+                }
+
+            }
         }
 
         //Retrieve Selenium students from Database
+        List<String> numbers = connectToSqlDB.readDataBase("tbl_Selenium", "mapKey", "mapValue");
+        for (String st :numbers) {
+            System.out.println(st);
+        }
+        List<String> numbers1 = connectToSqlDB.readDataBase("tbl_Qtp", "mapKey", "mapValue");
+        for(String st : numbers1){
+            System.out.println(st);
+        }
 
 
     }
